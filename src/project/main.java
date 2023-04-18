@@ -1,6 +1,10 @@
 package project;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -22,21 +26,20 @@ public class main {
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			
 			String arxmlFile = input();
-			
 			Document doc =builder.parse(arxmlFile);
-			
-			NodeList personList = doc.getElementsByTagName("SHORT-NAME");
-			for(int i = 0; i<personList.getLength(); i++) {
-				Node p = personList.item(i);
-				System.out.println(p.getTextContent());
-				/*if(p.getNodeType()==Node.ELEMENT_NODE) {
-					Element person = (Element)p;
-					String id = person.getAttribute("id");
-					
-				}*/
+			NodeList containers = doc.getElementsByTagName("CONTAINER");
+	     
+			ArrayList<Node>nodeArrayList = new ArrayList<Node>();
+			for(int i = 0; i<containers.getLength(); i++) {
+				nodeArrayList.add(containers.item(i));
 			}
+			
+			Collections.sort(nodeArrayList, new NodeComparator());	
+			for (int i = 0; i < nodeArrayList.size(); i++) {
+                System.out.println(nodeArrayList.get(i).getTextContent());
+            }
+
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
@@ -48,7 +51,26 @@ public class main {
 		}
 	}
 	
-	
+	static class NodeComparator implements Comparator<Node> {
+	        
+	        @Override
+	        public int compare(Node node1, Node node2) {
+	            String title1 = getNodeValue(node1);
+	            String title2 = getNodeValue(node2);
+	            return title1.compareTo(title2);
+	        }
+	        
+	        private String getNodeValue(Node node) {
+	            NodeList nodeList = node.getChildNodes();
+	            for (int i = 0; i < nodeList.getLength(); i++) {
+	                Node childNode = nodeList.item(i);
+	                if (childNode.getNodeName().equals("SHORT-NAME")) {
+	                    return childNode.getTextContent();
+	                }
+	            }
+	            return "";
+	        }
+	}
 	
 	public static String input() throws NotVaildAutosarFileException{
 		Scanner sc = new Scanner(System.in);
@@ -58,6 +80,8 @@ public class main {
 			throw new NotVaildAutosarFileException("Not valid arxml file");
 		return str;
 	}
+	
+	
 
 }
 
@@ -65,7 +89,10 @@ public class main {
 class NotVaildAutosarFileException extends Exception {
     public NotVaildAutosarFileException(String s)
     {
-        // Call constructor of parent Exception
         super(s);
     }
 }
+
+
+
+
