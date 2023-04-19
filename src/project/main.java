@@ -1,5 +1,6 @@
 package project;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +11,12 @@ import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -26,19 +33,33 @@ public class main {
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			String arxmlFile = input();
+			String arxmlFile = InputOutputHandling.input();
+			
+			File file = new File(arxmlFile);
+		    if (!file.exists() || !file.isFile()) {
+		        throw new FileNotFound("File does not Exist");
+		    }
+		    if (file.length() == 0) {
+		        throw new EmptyAutosarFileException("File is empty.");
+		    }
+		    
 			Document doc =builder.parse(arxmlFile);
+			int isEmpty = doc.getDocumentElement().getChildNodes().getLength();
+			if(isEmpty == 0) throw new EmptyAutosarFileException("Not valid arxml file");
 			NodeList containers = doc.getElementsByTagName("CONTAINER");
+			
 	     
-			ArrayList<Node>nodeArrayList = new ArrayList<Node>();
+			ArrayList<Element>nodeArrayList = new ArrayList<Element>();
 			for(int i = 0; i<containers.getLength(); i++) {
-				nodeArrayList.add(containers.item(i));
+				nodeArrayList.add((Element)(containers.item(i)));
 			}
 			
 			Collections.sort(nodeArrayList, new NodeComparator());	
 			for (int i = 0; i < nodeArrayList.size(); i++) {
                 System.out.println(nodeArrayList.get(i).getTextContent());
             }
+			String newName = InputOutputHandling.generateNewName(arxmlFile);
+			InputOutputHandling.newFile(nodeArrayList, doc, newName);
 
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
@@ -47,6 +68,10 @@ public class main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch(NotVaildAutosarFileException e) {
+			System.out.println(e.getMessage());
+		}catch(EmptyAutosarFileException e){
+			System.out.println(e.getMessage());
+		}catch(FileNotFound e) {
 			System.out.println(e.getMessage());
 		}
 	}
@@ -71,28 +96,4 @@ public class main {
 	            return "";
 	        }
 	}
-	
-	public static String input() throws NotVaildAutosarFileException{
-		Scanner sc = new Scanner(System.in);
-		System.out.print("Enter arxml file Name: ");
-		String str = sc.nextLine();
-		if(!str.endsWith(".arxml"))
-			throw new NotVaildAutosarFileException("Not valid arxml file");
-		return str;
-	}
-	
-	
-
 }
-
-
-class NotVaildAutosarFileException extends Exception {
-    public NotVaildAutosarFileException(String s)
-    {
-        super(s);
-    }
-}
-
-
-
-
