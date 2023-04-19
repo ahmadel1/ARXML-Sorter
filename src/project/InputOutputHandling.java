@@ -14,10 +14,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class InputOutputHandling {
-	public static String input() throws NotVaildAutosarFileException{
-		Scanner sc = new Scanner(System.in);
-		System.out.print("Enter arxml file Name: ");
-		String str = sc.nextLine();
+	public static String input(String in) throws NotVaildAutosarFileException{
+		//Scanner sc = new Scanner(System.in);
+		//System.out.print("Enter arxml file Name: ");
+		String str = in;
 		if(!str.endsWith(".arxml"))
 			throw new NotVaildAutosarFileException("Not valid arxml file");
 		return str;

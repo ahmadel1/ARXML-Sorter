@@ -29,11 +29,13 @@ public class main {
 
 
 	public static void main(String[] args) {
+        if(args.length == 0) return;
+		String userInput= args[0];
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			String arxmlFile = InputOutputHandling.input();
+			String arxmlFile = InputOutputHandling.input(userInput);
 			
 			File file = new File(arxmlFile);
 		    if (!file.exists() || !file.isFile()) {
@@ -55,9 +57,7 @@ public class main {
 			}
 			
 			Collections.sort(nodeArrayList, new NodeComparator());	
-			for (int i = 0; i < nodeArrayList.size(); i++) {
-                System.out.println(nodeArrayList.get(i).getTextContent());
-            }
+			
 			String newName = InputOutputHandling.generateNewName(arxmlFile);
 			InputOutputHandling.newFile(nodeArrayList, doc, newName);
 
@@ -96,4 +96,5 @@ public class main {
 	            return "";
 	        }
 	}
+	
 }
