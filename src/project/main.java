@@ -29,8 +29,11 @@ public class main {
 
 
 	public static void main(String[] args) {
+		
         if(args.length == 0) return;
-		String userInput= args[0];
+        String InputFileName = GetParentFolder() + args[0]; 
+        System.out.println("file Location:  " + InputFileName);
+		String userInput = InputFileName;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		
 		try {
@@ -38,7 +41,7 @@ public class main {
 			String arxmlFile = InputOutputHandling.input(userInput);
 			
 			File file = new File(arxmlFile);
-		    if (!file.exists() || !file.isFile()) {
+		    if (!file.exists()) {
 		        throw new FileNotFound("File does not Exist");
 		    }
 		    if (file.length() == 0) {
@@ -95,6 +98,13 @@ public class main {
 	            }
 	            return "";
 	        }
+	}
+	
+	static String GetParentFolder() {
+		String currentDir = System.getProperty("user.dir");
+		File currentDirFile = new File(currentDir);
+		String parentFolder = currentDirFile.getParent() + "\\";
+		return parentFolder;
 	}
 	
 }
