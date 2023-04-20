@@ -1,6 +1,6 @@
 @echo off
 
-cd D:\ARXMLSorter\src
+cd %~dp0src
 javac project\*.java
 
 color 0A
